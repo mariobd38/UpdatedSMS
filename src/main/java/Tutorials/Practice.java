@@ -1,6 +1,4 @@
-package App;
-
-import java.util.Random;
+package Tutorials;
 
 public class Practice {
   public static class Random {
