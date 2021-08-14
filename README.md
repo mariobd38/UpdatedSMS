@@ -1,1 +1,1 @@
-# SoccerManagementSystem
+# StudentManagementSystem
