@@ -12,7 +12,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="TestProject" options="" />
+      <module name="TestProject" options="--add-exports javafx.graphics/com.sun.javafx.application=TestProject" />
     </option>
   </component>
 </project>
