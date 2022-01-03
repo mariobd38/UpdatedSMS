@@ -1,6 +1,7 @@
 package DemoProject;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -13,7 +14,10 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import java.io.FileNotFoundException;
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -26,6 +30,8 @@ public class Person {
   protected String username;
   protected String password;
   protected String email;
+  protected String first_name;
+  protected String last_name;
   protected String url; //sms is the name of the database created beforehand
   protected String sqlUsername;
   protected String sqlPassword;
@@ -93,16 +99,16 @@ public class Person {
     backButton.setOnAction(e -> setWindow());
     layout.getChildren().addAll(backButton);
 
-    Label label1 = new Label("First Name");
-    setLabelFont(label1,16);
+    Label fname_label = new Label("First Name");
+    setLabelFont(fname_label,16);
     TextField fnameField = new TextField();
     fnameField.setMaxWidth(150);
     setFieldFont(fnameField);
     Label validate1 = new Label("");
     setLabelFont(validate1,16);
 
-    Label label2 = new Label("Last Name");
-    setLabelFont(label2,16);
+    Label lname_label = new Label("Last Name");
+    setLabelFont(lname_label,16);
     TextField lnameField = new TextField();
     lnameField.setMaxWidth(150);
     setFieldFont(lnameField);
@@ -166,7 +172,6 @@ public class Person {
     schoolChoices.setStyle("-fx-font: 13px \"Arial\";");
     Label validate4 = new Label("");
     setLabelFont(validate4,16);
-
 
     Label majorLabel = new Label("Major:");
     setLabelFont(majorLabel,16);
@@ -250,20 +255,24 @@ public class Person {
         confirmPasswordField.setDisable(true);
         submit.setDisable(true);
         email = username + "@" +  schoolChoices.getValue().getAcronym() + ".edu";
+        first_name = fnameField.getText();
+        last_name = lnameField.getText();
 
         Connection connection;
         try {
           connection = DriverManager.getConnection(url,sqlUsername,sqlPassword);
           String newPerson = (studentChoice.isSelected()) ? "INSERT INTO STUDENT(f_name,l_name,role,username,email,password," +
-                  "college,college_acronym,major,dob) VALUES ("+"'" + fnameField.getText() + "','" +
-                  lnameField.getText() + "', 'student','" + username + "','" + email + "','" + password + "','" +
+                  "college,college_acronym,major,major_acronym,dob) VALUES ("+"'" + first_name + "','" +
+                  last_name + "', 'student','" + username + "','" + email + "','" + password + "','" +
                   schoolChoices.getValue().getValue() + "','" + schoolChoices.getValue().getAcronym() + "','" +
-                  majorChoices.getValue().getValue() + "','" + dp.getValue() + "');"
+                  majorChoices.getValue().getValue() + "','" + majorChoices.getValue().getAcronym() + "','" +
+                  dp.getValue() + "');"
                   : "INSERT INTO PROFESSOR(f_name,l_name,role, username,email,password," +
-                  "college,college_acronym,course,dob) VALUES ("+"'" + fnameField.getText() + "','" +
-                  lnameField.getText() + "', 'professor','" + username + "','" + email + "','" + password + "','" +
+                  "college,college_acronym,course,course_acronym,dob) VALUES ("+"'" + first_name + "','" +
+                  last_name + "', 'professor','" + username + "','" + email + "','" + password + "','" +
                   schoolChoices.getValue().getValue() + "','" + schoolChoices.getValue().getAcronym() + "','" +
-                  majorChoices.getValue().getValue() + "','" + dp.getValue() + "');";
+                  majorChoices.getValue().getValue() + "','" + majorChoices.getValue().getAcronym() + "','" +
+                  dp.getValue() + "');";
 //          System.out.println(newStudent);
           Statement statement = connection.createStatement();
           statement.executeUpdate(newPerson);
@@ -300,9 +309,9 @@ public class Person {
     });
 
     HBox hb1 = new HBox(10);
-    hb1.getChildren().addAll(label1, fnameField,validate1);
+    hb1.getChildren().addAll(fname_label, fnameField,validate1);
     HBox hb2 = new HBox(10);
-    hb2.getChildren().addAll(label2,lnameField,validate2);
+    hb2.getChildren().addAll(lname_label,lnameField,validate2);
     HBox hb3 = new HBox(10);
     hb3.getChildren().addAll(l,dp,dob,validate3);
     HBox hb4 = new HBox(10);
@@ -416,6 +425,8 @@ public class Person {
   }
 
   public String verifyPassword(String password) {
+    if(password.length() == 0)
+      return "Error: Enter a password";
     if(password.length() < 7) {
       return "Error: Password length too short";
     }
@@ -430,6 +441,34 @@ public class Person {
       return "Error: Password must contain at least one digit";
     }
     return "";
+  }
+  //method checks if the class being added interferes with other added classes
+  public boolean checkClassTimes(ObservableList<ClassEntry> classes, ClassEntry selectedClass) throws ParseException {
+    if(classes == null) {
+      return true;
+    }
+    else {
+      String startTime1 = selectedClass.getCourseStartTime();
+      String endTime1 = selectedClass.getCourseEndTime();
+      SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+      java.util.Date startTimeDate1 = format.parse(startTime1);
+      java.util.Date endTimeDate1 = format.parse(endTime1);
+
+      String[] courseDays = selectedClass.getCourseDays().split(",");
+      for(int i = 0; i < classes.size();i++) {
+        String startTime2 = classes.get(i).getCourseStartTime();
+        String endTime2 = classes.get(i).getCourseEndTime();
+        java.util.Date startTimeDate2 = format.parse(startTime2);
+        Date endTimeDate2 = format.parse(endTime2);
+        if((startTimeDate1.before(endTimeDate2) && endTimeDate1.after(startTimeDate2))) {
+          for(String courseDay : courseDays) {
+            if(classes.get(i).getCourseDays().contains(courseDay))
+              return false;
+          }
+        }
+      }
+    }
+    return true;
   }
 
 }

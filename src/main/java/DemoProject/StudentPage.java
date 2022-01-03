@@ -4,7 +4,6 @@ import javafx.collections.*;
 import javafx.geometry.*;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
@@ -12,7 +11,7 @@ import java.io.*;
 import java.sql.*;
 
 public class StudentPage extends Person{
-
+  private String student_name;
   public StudentPage(String[] args, Stage window, Scene welcomeScene, Label welcomeLabel, Button loginButton,
                      Button signupButton, Stage stage, Label identify, RadioButton studentChoice, RadioButton profChoice) {
     super(args,window, welcomeScene, welcomeLabel, loginButton, signupButton, stage, identify, studentChoice, profChoice);
@@ -29,7 +28,10 @@ public class StudentPage extends Person{
     Button myGrades = new Button("My Grades");
     setButtonFont(myGrades,22);
 
-    final Button[] buttons = new Button[]{update_info,myClasses,myGrades};
+    Button signOut = new Button("Sign Out");
+    setButtonFont(signOut,22);
+
+    final Button[] buttons = new Button[]{update_info,myClasses,myGrades,signOut};
 
     String schoolAcronym = "";
     Connection connection;
@@ -61,12 +63,18 @@ public class StudentPage extends Person{
     imageView.setPreserveRatio(true);
 
 
-    VBox layout0 = new VBox(20);
-    layout0.setAlignment(Pos.TOP_LEFT);
-    layout0.getChildren().addAll(imageView,update_info,myClasses,myGrades);
+    HBox hLayout = new HBox(320);
+    hLayout.setAlignment(Pos.TOP_CENTER);
+    hLayout.getChildren().addAll(imageView,signOut);
+
+    VBox vLayout = new VBox(20);
+    vLayout.setAlignment(Pos.BASELINE_LEFT);
+    vLayout.getChildren().addAll(update_info,myClasses,myGrades);
 
     BorderPane borderPane = new BorderPane();
-    borderPane.setCenter(layout0);
+//    borderPane.setCenter(hLayout,vLayout);
+    borderPane.setTop(hLayout);
+    borderPane.setLeft(vLayout);
     borderPane.setStyle("-fx-padding: 10 10 10 10;");
 
     final String HOVER_BUTTON_STYLE = " -fx-text-fill: #15e5e8;";
@@ -112,10 +120,12 @@ public class StudentPage extends Person{
     String finalText_fill_color1 = text_fill_color;
     update_info.setOnAction(e ->
             window.setScene(updateInfoScene(finalBorder_pane_color2, finalText_fill_color1,user)));
-    myClasses.setOnAction(e ->
-            window.setScene(myClassesScene(finalBorder_pane_color2, finalText_fill_color1,user)));
+//    myClasses.setOnAction(e ->
+//            window.setScene(myClassesScene(finalBorder_pane_color2, finalText_fill_color1,user)));
     myGrades.setOnAction(e ->
             window.setScene(myGradesScene(finalBorder_pane_color2, finalText_fill_color1,user)));
+    signOut.setOnAction(e ->
+            setWindow());
 
     return new Scene(borderPane,STAGE_WIDTH,STAGE_HEIGHT);
   }
@@ -240,56 +250,49 @@ public class StudentPage extends Person{
 
     return new Scene(borderPane,STAGE_WIDTH,STAGE_HEIGHT);
   }
-  public Scene myClassesScene(String border_pane_color, String text_fill_color,String user) {
-
-    final ObservableList<ClassEntry> data =
-            FXCollections.observableArrayList(
-                    new ClassEntry("Jacob", "Smith"),
-                    new ClassEntry("Isabella", "Johnson"),
-                    new ClassEntry("Ethan", "Williams"),
-                    new ClassEntry("Emma", "Jones"),
-                    new ClassEntry("Michael", "Brown")
-            );
-
-    TableView table = new TableView();
-    TableColumn firstNameCol = new TableColumn("Class ID");
-    firstNameCol.setMinWidth(100);
-    firstNameCol.setCellValueFactory(
-            new PropertyValueFactory<ClassEntry, String>("firstName"));
-
-
-    TableColumn lastNameCol = new TableColumn("Last Name");
-    lastNameCol.setMinWidth(100);
-    lastNameCol.setCellValueFactory(
-            new PropertyValueFactory<ClassEntry, String>("lastName"));
-
-    table.setItems(data);
-    table.getColumns().addAll(firstNameCol, lastNameCol);
-
-    table.setMaxHeight(250);
-    table.setMaxWidth(200);
-
-    VBox vLayout = new VBox();
-    vLayout.setSpacing(5);
-    vLayout.setPadding(new Insets(10, 0, 0, 10));
-    vLayout.getChildren().add(table);
-    vLayout.setAlignment(Pos.TOP_CENTER);
-
-//    HBox hb1 = new HBox(10);
-//    hb1.getChildren().addAll(testLabel);
-//    VBox vLayout = new VBox(50);
-//    vLayout.getChildren().addAll(hb1);
-
-//    return new Scene(vLayout,STAGE_WIDTH,STAGE_HEIGHT);
-
-    BorderPane borderPane = new BorderPane();
-    borderPane.setCenter(vLayout);
-
-    borderPane.setStyle("-fx-padding: 25 10 10 10; -fx-background-color: "+border_pane_color +
-            ";");
-
-    return new Scene(borderPane,STAGE_WIDTH,STAGE_HEIGHT);
-  }
+//  public Scene myClassesScene(String border_pane_color, String text_fill_color,String user) {
+//
+//    final ObservableList<ClassEntry> data =
+//            FXCollections.observableArrayList(
+//                    new ClassEntry("Jacob", "Smith"),
+//                    new ClassEntry("Isabella", "Johnson"),
+//                    new ClassEntry("Ethan", "Williams"),
+//                    new ClassEntry("Emma", "Jones"),
+//                    new ClassEntry("Michael", "Brown")
+//            );
+//
+//    TableView table = new TableView();
+//    TableColumn firstNameCol = new TableColumn("Class ID");
+//    firstNameCol.setMinWidth(100);
+//    firstNameCol.setCellValueFactory(
+//            new PropertyValueFactory<ClassEntry, String>("firstName"));
+//
+//
+//    TableColumn lastNameCol = new TableColumn("Last Name");
+//    lastNameCol.setMinWidth(100);
+//    lastNameCol.setCellValueFactory(
+//            new PropertyValueFactory<ClassEntry, String>("lastName"));
+//
+//    table.setItems(data);
+//    table.getColumns().addAll(firstNameCol, lastNameCol);
+//
+//    table.setMaxHeight(250);
+//    table.setMaxWidth(200);
+//
+//    VBox vLayout = new VBox();
+//    vLayout.setSpacing(5);
+//    vLayout.setPadding(new Insets(10, 0, 0, 10));
+//    vLayout.getChildren().add(table);
+//    vLayout.setAlignment(Pos.TOP_CENTER);
+//
+//    BorderPane borderPane = new BorderPane();
+//    borderPane.setCenter(vLayout);
+//
+//    borderPane.setStyle("-fx-padding: 25 10 10 10; -fx-background-color: "+border_pane_color +
+//            ";");
+//
+//    return new Scene(borderPane,STAGE_WIDTH,STAGE_HEIGHT);
+//  }
   public Scene myGradesScene(String border_pane_color, String text_fill_color,String user) {
     Label testLabel = new Label("My Grades Scene");
     setLabelFont(testLabel,16);

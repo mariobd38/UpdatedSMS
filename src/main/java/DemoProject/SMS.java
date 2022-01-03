@@ -32,6 +32,7 @@ public class SMS extends Application {
               "college VARCHAR(60) NOT NULL," +
               "college_acronym VARCHAR(8) NOT NULL," +
               "major VARCHAR(60) DEFAULT 'Undeclared'," +
+              "major_acronym VARCHAR(5) DEFAULT 'N/A'," +
               "dob DATE NOT NULL" +
               ");";
       String professorTable = "CREATE TABLE IF NOT EXISTS PROFESSOR(" +
@@ -45,6 +46,7 @@ public class SMS extends Application {
               "college VARCHAR(60) NOT NULL," +
               "college_acronym VARCHAR(8) NOT NULL," +
               "course VARCHAR(60) DEFAULT 'None'," +
+              "course_acronym VARCHAR(5) DEFAULT 'N/A'," +
               "dob DATE NOT NULL" +
               ");";
       Statement statement = connection.createStatement();
@@ -55,7 +57,6 @@ public class SMS extends Application {
     } catch(SQLException e) {
       e.printStackTrace();
     }
-
   }
 
   public void start(Stage stage) {
@@ -96,7 +97,6 @@ public class SMS extends Application {
       selectedButton.set(rb2);
     });
 
-
     StudentPage studentPage = new StudentPage(sqlDetails, window,
             welcomeScene, welcomeLabel, loginButton, signupButton, stage,identify,rb1,rb2);
     ProfessorPage professorPage = new ProfessorPage(sqlDetails, window,
@@ -133,6 +133,5 @@ public class SMS extends Application {
     welcomeScene = new Scene(layout2,STAGE_WIDTH,STAGE_HEIGHT);
     window.setScene(welcomeScene);
     window.show();
-
   }
 }
